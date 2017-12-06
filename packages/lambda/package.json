@@ -22,6 +22,7 @@
     "aws-sdk": "^2.177.0",
     "globby": "^7.1.1",
     "hops-config": "9.5.0",
+    "mime": "^2.0.3",
     "prompt": "^1.0.0",
     "resolve-tree": "^0.1.13",
     "serverless-http": "^1.5.2"
