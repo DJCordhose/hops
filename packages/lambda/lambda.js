@@ -32,10 +32,25 @@ var binaryMimeTypes = [
   'text/xml',
 ];
 
+function cleanupRequest(request) {
+  return {
+    headers: request.headers,
+    url: request.url,
+    method: request.method,
+    statusCode: request.statusCode,
+    statusMessage: request.statusMessage,
+    ip: request.ip,
+  };
+}
+
 exports.handler = serverlessHttp(app, {
   binary: binaryMimeTypes,
   request: function(request, context) {
     request.url = context.requestContext.path;
+    console.log(
+      'incoming request:',
+      JSON.stringify({ request: cleanupRequest(request), context }, null, 2)
+    );
     return request;
   },
 });

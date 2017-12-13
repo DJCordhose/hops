@@ -5,8 +5,14 @@
   "license": "MIT",
   "config": {
     "hops": {
+      "basePath": "/prod/",
+      "assetPath": "/prod/assets",
       "browsers": "last 1 Chrome versions",
-      "locations": ["/", "/counter"]
+      "node": "6.10.3",
+      "locations": ["/", "/counter"],
+      "aws": {
+        "region": "eu-central-1"
+      }
     }
   },
   "scripts": {
@@ -16,6 +22,7 @@
   },
   "dependencies": {
     "hops-express": "9.6.0",
+    "hops-lambda": "9.6.0",
     "hops-react": "9.5.0",
     "hops-redux": "9.5.0",
     "prop-types": "^15.6.0",
