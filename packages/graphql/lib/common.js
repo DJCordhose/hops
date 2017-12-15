@@ -1,43 +1,46 @@
 'use strict';
 require('isomorphic-fetch');
 
-var React = require('react');
-var ReactApollo = require('react-apollo');
+const React = require('react');
+const ReactApollo = require('react-apollo');
 
-var ApolloClient = require('apollo-client').default;
-var ApolloCache = require('apollo-cache-inmemory');
-var ApolloLink = require('apollo-link-http');
+const ApolloClient = require('apollo-client').default;
+const ApolloCache = require('apollo-cache-inmemory');
+const ApolloLink = require('apollo-link-http');
 
-var hopsConfig = require('hops-config');
+const hopsConfig = require('hops-config');
 
-module.exports = {
-  constructor: function(options) {
-    if (!options) {
-      options = {};
-    }
-    this.client = this.createClient(options.graphql || {});
-  },
-  createClient: function(options) {
+module.exports = class Common {
+  constructor(options = { graphql: {} }) {
+    this.client = this.createClient(options.graphql);
+  }
+
+  createClient(options) {
     return new ApolloClient(this.enhanceClientOptions(options));
-  },
-  enhanceClientOptions: function(options) {
-    return Object.assign({}, options, {
+  }
+
+  enhanceClientOptions(options) {
+    return {
+      ...options,
       link: options.link || this.createLink(),
       cache: options.cache || this.createCache(),
-    });
-  },
-  createLink: function() {
+    };
+  }
+
+  createLink() {
     return new ApolloLink.HttpLink({
       uri: hopsConfig.graphqlUri,
     });
-  },
-  createCache: function() {
+  }
+
+  createCache() {
     return new ApolloCache.InMemoryCache({
       fragmentMatcher: this.createFragmentMatcher(),
     });
-  },
-  createFragmentMatcher: function() {
-    var result = this.getIntrospectionResult();
+  }
+
+  createFragmentMatcher() {
+    const result = this.getIntrospectionResult();
     if (result) {
       return new ApolloCache.IntrospectionFragmentMatcher({
         introspectionQueryResultData: this.getIntrospectionResult(),
@@ -45,8 +48,9 @@ module.exports = {
     } else {
       return new ApolloCache.HeuristicFragmentMatcher();
     }
-  },
-  enhanceElement: function(reactElement) {
+  }
+
+  enhanceElement(reactElement) {
     return React.createElement(
       ReactApollo.ApolloProvider,
       {
@@ -54,5 +58,5 @@ module.exports = {
       },
       reactElement
     );
-  },
+  }
 };

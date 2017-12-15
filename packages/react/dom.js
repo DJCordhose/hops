@@ -1,70 +1,64 @@
-'use strict';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
+import mixinable from 'mixinable';
 
-var React = require('react');
-var ReactDOM = require('react-dom');
-var ReactRouterDOM = require('react-router-dom');
-var mixinable = require('mixinable');
+import hopsConfig from 'hops-config';
 
-var hopsConfig = require('hops-config');
+export * from './lib/components';
 
-exports.combineContexts = mixinable({
+export const combineContexts = mixinable({
   bootstrap: mixinable.async.parallel,
   enhanceElement: mixinable.async.compose,
   getMountpoint: mixinable.override,
 });
 
-exports.ReactContext = function(options) {
-  if (!options) {
-    options = {};
-  }
-  this.routerOptions = Object.assign(
-    { basename: hopsConfig.basePath },
-    options.router
-  );
-  this.mountpoint = options.mountpoint || '#main';
-};
-exports.ReactContext.prototype = {
-  enhanceElement: function(reactElement) {
-    return React.createElement(
-      ReactRouterDOM.BrowserRouter,
-      this.routerOptions,
-      reactElement
+export class ReactContext {
+  constructor(options = {}) {
+    this.routerOptions = Object.assign(
+      {
+        basename: hopsConfig.basePath,
+      },
+      options.router || {}
     );
-  },
-  getMountpoint: function() {
+    this.mountpoint = options.mountpoint || '#main';
+  }
+
+  enhanceElement(reactElement) {
+    return React.createElement(BrowserRouter, this.routerOptions, reactElement);
+  }
+
+  getMountpoint() {
     return document.querySelector(this.mountpoint);
-  },
-};
+  }
+}
 
-exports.contextDefinition = exports.ReactContext;
+export const contextDefinition = ReactContext;
 
-exports.createContext = exports.combineContexts(exports.ReactContext);
+export const createContext = combineContexts(ReactContext);
 
-exports.render = function(reactElement, context) {
-  return function() {
-    var mountpoint = context.getMountpoint();
-    var isMounted = mountpoint.hasAttribute('data-hopsroot');
+export const render = (reactElement, context) => {
+  return async () => {
+    const mountpoint = context.getMountpoint();
+    const isMounted = mountpoint.hasAttribute('data-hopsroot');
+
     if (isMounted) {
       ReactDOM.unmountComponentAtNode(mountpoint);
     } else {
       mountpoint.setAttribute('data-hopsroot', '');
     }
-    return context
-      .bootstrap()
-      .then(function() {
-        return context.enhanceElement(reactElement);
-      })
-      .then(function(enhancedElement) {
-        if (ReactDOM.hydrate && !isMounted) {
-          ReactDOM.hydrate(enhancedElement, mountpoint);
-        } else {
-          ReactDOM.render(enhancedElement, mountpoint);
-        }
-      })
-      .catch(function(error) {
-        console.error('Error while rendering:', error);
-      });
+
+    try {
+      await context.bootstrap();
+      const enhancedElement = await context.enhanceElement(reactElement);
+
+      if (ReactDOM.hydrate && !isMounted) {
+        ReactDOM.hydrate(enhancedElement, mountpoint);
+      } else {
+        ReactDOM.render(enhancedElement, mountpoint);
+      }
+    } catch (error) {
+      console.error('Error while rendering:', error);
+    }
   };
 };
-
-Object.assign(exports, require('./lib/components'));

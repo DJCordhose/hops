@@ -1,14 +1,14 @@
 'use strict';
 
-var React = require('react');
-var ReactDOM = require('react-dom/server');
-var ReactRouter = require('react-router');
-var Helmet = require('react-helmet').Helmet;
-var mixinable = require('mixinable');
+const React = require('react');
+const ReactDOM = require('react-dom/server');
+const ReactRouter = require('react-router');
+const Helmet = require('react-helmet').Helmet;
+const mixinable = require('mixinable');
 
-var hopsConfig = require('hops-config');
+const hopsConfig = require('hops-config');
 
-var defaultTemplate = require('./lib/template');
+const defaultTemplate = require('./lib/template');
 
 exports.combineContexts = mixinable({
   bootstrap: mixinable.async.parallel,
@@ -17,70 +17,68 @@ exports.combineContexts = mixinable({
   renderTemplate: mixinable.override,
 });
 
-exports.ReactContext = function(options) {
-  if (!options) {
-    options = {};
+class ReactContext {
+  constructor(options = {}) {
+    this.routerOptions = Object.assign(
+      {
+        location: options.request && options.request.path,
+        basename: hopsConfig.basePath,
+        context: {},
+      },
+      options.router
+    );
+    this.template = options.template || defaultTemplate;
   }
-  this.routerOptions = Object.assign(
-    {
-      location: options.request && options.request.path,
-      basename: hopsConfig.basePath,
-      context: {},
-    },
-    options.router
-  );
-  this.template = options.template || defaultTemplate;
-};
-exports.ReactContext.prototype = {
-  enhanceElement: function(reactElement) {
+
+  enhanceElement(reactElement) {
     return React.createElement(
       ReactRouter.StaticRouter,
       this.routerOptions,
       reactElement
     );
-  },
-  getTemplateData: function(templateData, rootElement) {
+  }
+
+  getTemplateData(templateData, rootElement) {
     return Object.assign({}, templateData, {
       routerContext: this.routerOptions.context,
       assets: hopsConfig.assets,
       manifest: hopsConfig.manifest,
       globals: templateData.globals || [],
     });
-  },
-  renderTemplate: function(templateData) {
+  }
+
+  renderTemplate(templateData) {
     return this.template(
       Object.assign({ helmet: Helmet.renderStatic() }, templateData)
     );
-  },
-};
+  }
+}
+exports.ReactContext = ReactContext;
+exports.contextDefinition = ReactContext;
 
-exports.contextDefinition = exports.ReactContext;
+exports.createContext = exports.combineContexts(ReactContext);
 
-exports.createContext = exports.combineContexts(exports.ReactContext);
-
-var cloneContext = mixinable.replicate(function(initialArgs, newArgs) {
-  return [Object.assign({}, initialArgs[0], newArgs[0])];
+const cloneContext = mixinable.replicate(([initialArgs], [newArgs]) => {
+  return [Object.assign({}, initialArgs, newArgs)];
 });
 
 exports.render = function(reactElement, _context) {
   return function(req, res, next) {
-    var renderContext = cloneContext(_context, { request: req });
+    const renderContext = cloneContext(_context, { request: req });
     renderContext
       .bootstrap()
-      .then(function() {
-        return renderContext.enhanceElement(reactElement);
-      })
-      .then(function(rootElement) {
+      .then(() => renderContext.enhanceElement(reactElement))
+      .then(rootElement => {
         return renderContext
           .getTemplateData({}, rootElement)
-          .then(function(templateData) {
+          .then(templateData => {
             return { templateData: templateData, rootElement: rootElement };
           });
       })
-      .then(function(result) {
-        var templateData = result.templateData;
-        var rootElement = result.rootElement;
-        var markup = renderContext.renderTemplate(
+      .then(result => {
+        const templateData = result.templateData;
+        const rootElement = result.rootElement;
+        const markup = renderContext.renderTemplate(
           Object.assign(
             {
               markup: ReactDOM.renderToString(rootElement),
@@ -88,7 +86,7 @@ exports.render = function(reactElement, _context) {
             templateData
           )
         );
-        var routerContext = templateData.routerContext;
+        const routerContext = templateData.routerContext;
 
         if (routerContext.miss) {
           next();

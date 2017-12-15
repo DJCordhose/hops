@@ -68,9 +68,11 @@
       "prettier/prettier": "error"
     },
     "parserOptions": {
-      "ecmaVersion": 5,
-      "env": {
-        "es6": false
+      "ecmaVersion": 2017,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true,
+        "experimentalObjectRestSpread": true
       }
     }
   },

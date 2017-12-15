@@ -1,27 +1,18 @@
-'use strict';
+import { combineContexts, ReactContext } from 'hops-react';
 
-var hopsReact = require('hops-react');
+import Common from './lib/common';
+import constants from './lib/constants';
 
-var common = require('./lib/common');
-var constants = require('./lib/constants');
+export class GraphQLContext extends Common {
+  createCache() {
+    return super.createCache().restore(global[constants.APOLLO_STATE]);
+  }
 
-exports.GraphQLContext = function() {
-  return common.constructor.apply(this, arguments);
-};
-exports.GraphQLContext.prototype = Object.assign({}, common, {
-  createCache: function() {
-    return common.createCache
-      .call(this)
-      .restore(global[constants.APOLLO_STATE]);
-  },
-  getIntrospectionResult: function() {
+  getIntrospectionResult() {
     return global[constants.APOLLO_IQRD];
-  },
-});
+  }
+}
 
-exports.contextDefinition = exports.GraphQLContext;
+export const contextDefinition = GraphQLContext;
 
-exports.createContext = hopsReact.combineContexts(
-  hopsReact.ReactContext,
-  exports.GraphQLContext
-);
+export const createContext = combineContexts(ReactContext, GraphQLContext);

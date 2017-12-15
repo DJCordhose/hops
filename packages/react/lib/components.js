@@ -1,6 +1,6 @@
 'use strict';
 
-var ReactRouter = require('react-router');
+const ReactRouter = require('react-router');
 
 exports.Miss = ReactRouter.withRouter(function Miss(props) {
   if (props.staticContext) {

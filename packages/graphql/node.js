@@ -1,48 +1,48 @@
 'use strict';
 
-var ReactApollo = require('react-apollo');
+const ReactApollo = require('react-apollo');
 
-var hopsReact = require('hops-react');
+const hopsReact = require('hops-react');
 
-var common = require('./lib/common');
-var constants = require('./lib/constants');
-var introspectionResult = require('./lib/util').getIntrospectionResult();
+const Common = require('./lib/common');
+const constants = require('./lib/constants');
+const introspectionResult = require('./lib/util').getIntrospectionResult();
 
-exports.GraphQLContext = function() {
-  return common.constructor.apply(this, arguments);
-};
-exports.GraphQLContext.prototype = Object.assign({}, common, {
-  enhanceClientOptions: function(options) {
-    return Object.assign(common.enhanceClientOptions.call(this, options), {
+class GraphQLContext extends Common {
+  enhanceClientOptions(options) {
+    return {
+      ...super.enhanceClientOptions(options),
       ssrMode: true,
-    });
-  },
-  getIntrospectionResult: function() {
-    return introspectionResult;
-  },
-  getTemplateData: function(templateData, rootElement) {
-    return ReactApollo.getDataFromTree(rootElement).then(
-      function() {
-        return Object.assign({}, templateData, {
-          globals: (templateData.globals || []).concat([
-            {
-              name: constants.APOLLO_IQRD,
-              value: this.getIntrospectionResult(),
-            },
-            {
-              name: constants.APOLLO_STATE,
-              value: this.client.cache.extract(),
-            },
-          ]),
-        });
-      }.bind(this)
-    );
-  },
-});
+    };
+  }
 
-exports.contextDefinition = exports.GraphQLContext;
+  getIntrospectionResult() {
+    return introspectionResult;
+  }
+
+  getTemplateData(templateData, rootElement) {
+    return ReactApollo.getDataFromTree(rootElement).then(() => {
+      return {
+        ...templateData,
+        globals: [
+          ...(templateData.globals || []),
+          {
+            name: constants.APOLLO_IQRD,
+            value: this.getIntrospectionResult(),
+          },
+          {
+            name: constants.APOLLO_STATE,
+            value: this.client.cache.extract(),
+          },
+        ],
+      };
+    });
+  }
+}
+exports.GraphQLContext = GraphQLContext;
+exports.contextDefinition = GraphQLContext;
 
 exports.createContext = hopsReact.combineContexts(
   hopsReact.ReactContext,
-  exports.GraphQLContext
+  GraphQLContext
 );
