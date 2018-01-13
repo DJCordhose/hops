@@ -1,48 +1,44 @@
-'use strict';
+import { getDataFromTree } from 'react-apollo/index';
 
-var ReactApollo = require('react-apollo');
+import { combineContexts, ReactContext } from 'hops-react';
 
-var hopsReact = require('hops-react');
+import Common from './lib/common';
+import { APOLLO_STATE, APOLLO_IQRD } from './lib/constants';
+import util from './lib/util';
 
-var common = require('./lib/common');
-var constants = require('./lib/constants');
-var introspectionResult = require('./lib/util').getIntrospectionResult();
+const introspectionResult = util.getIntrospectionResult();
 
-exports.GraphQLContext = function() {
-  return common.constructor.apply(this, arguments);
-};
-exports.GraphQLContext.prototype = Object.assign({}, common, {
-  enhanceClientOptions: function(options) {
-    return Object.assign(common.enhanceClientOptions.call(this, options), {
-      ssrMode: true,
-    });
-  },
-  getIntrospectionResult: function() {
-    return introspectionResult;
-  },
-  getTemplateData: function(templateData, rootElement) {
-    return ReactApollo.getDataFromTree(rootElement).then(
-      function() {
-        return Object.assign({}, templateData, {
-          globals: (templateData.globals || []).concat([
-            {
-              name: constants.APOLLO_IQRD,
-              value: this.getIntrospectionResult(),
-            },
-            {
-              name: constants.APOLLO_STATE,
-              value: this.client.cache.extract(),
-            },
-          ]),
-        });
-      }.bind(this)
+export class GraphQLContext extends Common {
+  enhanceClientOptions(options) {
+    return Object.assign(
+      { ssrMode: true },
+      super.enhanceClientOptions(options)
     );
-  },
-});
+  }
 
-exports.contextDefinition = exports.GraphQLContext;
+  getIntrospectionResult() {
+    return introspectionResult;
+  }
 
-exports.createContext = hopsReact.combineContexts(
-  hopsReact.ReactContext,
-  exports.GraphQLContext
-);
+  getTemplateData(templateData, rootElement) {
+    return getDataFromTree(rootElement).then(() =>
+      Object.assign({}, templateData, {
+        globals: [
+          ...(templateData.globals || []),
+          {
+            name: APOLLO_IQRD,
+            value: this.getIntrospectionResult(),
+          },
+          {
+            name: APOLLO_STATE,
+            value: this.client.cache.extract(),
+          },
+        ],
+      })
+    );
+  }
+}
+
+export const contextDefinition = GraphQLContext;
+
+export const createContext = combineContexts(ReactContext, GraphQLContext);

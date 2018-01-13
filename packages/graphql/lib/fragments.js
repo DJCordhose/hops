@@ -1,42 +1,40 @@
 'use strict';
 
-var fs = require('fs');
+const fs = require('fs');
+const fetch = require('isomorphic-fetch');
+const hopsConfig = require('hops-config');
 
-var fetch = require('isomorphic-fetch');
-
-var hopsConfig = require('hops-config');
-
-var fragmentsFile = require('./util').getFragmentsFile();
+const fragmentsFile = require('./util').getFragmentsFile();
 
 module.exports = function fetchFragments() {
   return fetch(hopsConfig.graphqlUri, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      query: [
-        /* eslint-disable indent */
-        '       {',
-        '         __schema {',
-        '           types {',
-        '             kind',
-        '             name',
-        '             possibleTypes {',
-        '               name',
-        '             }',
-        '           }',
-        '         }',
-        '       }',
-        /* eslint-enable indent */
-      ].join('\n'),
+      /* eslint-disable indent */
+      query: `
+        {
+          __schema {
+            types {
+              kind
+              name
+              possibleTypes {
+                name
+              }
+            }
+          }
+        }
+      `,
+      /* eslint-enable indent */
     }),
   })
     .then(result => result.json())
     .then(result => {
-      var filteredData = result.data.__schema.types.filter(function(type) {
+      const filteredData = result.data.__schema.types.filter(type => {
         return type.possibleTypes !== null;
       });
       result.data.__schema.types = filteredData;
-      return new Promise(function(resolve, reject) {
+      return new Promise((resolve, reject) => {
         fs.writeFile(fragmentsFile, JSON.stringify(result.data), err => {
           if (err) {
             reject(err);
