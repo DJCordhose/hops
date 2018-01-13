@@ -37,7 +37,7 @@
     "start:minimal": "cd packages/template-minimal; yarn start",
     "start:graphql": "cd packages/template-graphql; yarn start",
     "test": "lerna run test --stream",
-    "lint": "eslint \"packages/**/*.js\"",
+    "lint": "eslint 'packages/**/*.{js,mjs}'",
     "release": "lerna publish --exact --conventional-commits",
     "release:major": "lerna publish --force-publish=* --cd-version major",
     "update": "yarn upgrade-interactive --latest && rm yarn.lock && yarn",
@@ -63,12 +63,21 @@
   },
   "eslintConfig": {
     "extends": ["semistandard", "prettier"],
-    "plugins": ["prettier"],
+    "plugins": ["prettier", "node"],
     "rules": {
+      "node/no-unsupported-features": [
+        "error",
+        {
+          "ignores": ["modules"]
+        }
+      ],
       "prettier/prettier": "error"
     },
     "parserOptions": {
-      "ecmaVersion": 2017
+      "ecmaVersion": 2017,
+      "ecmaFeatures": {
+        "experimentalObjectRestSpread": false
+      }
     },
     "env": {
       "es6": true,
