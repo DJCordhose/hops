@@ -4,6 +4,9 @@
   "description": "CLI tool to create, build and run Hops applications",
   "keywords": ["hops", "cli"],
   "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "bin": {
     "hops": "hops.js"
   },

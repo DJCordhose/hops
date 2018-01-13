@@ -4,6 +4,9 @@
   "description": "Hops Express middleware leveraging Webpack",
   "keywords": ["hops", "webpack", "express"],
   "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "main": "index.js",
   "files": ["index.js", "transpile.js"],
   "repository": {

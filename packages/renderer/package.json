@@ -4,6 +4,9 @@
   "description": "Hops HTML renderer based on Webpack",
   "keywords": ["hops", "webpack"],
   "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "main": "index.js",
   "files": ["index.js"],
   "dependencies": {

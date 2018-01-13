@@ -4,6 +4,9 @@
   "description": "Provides common functionality for express-like servers",
   "keywords": ["hops", "webpack-dev-server", "express"],
   "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "main": "index.js",
   "files": ["index.js"],
   "repository": {

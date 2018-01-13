@@ -4,6 +4,9 @@
   "description": "React and ReactRouter setup for Hops",
   "keywords": ["hops", "react", "react-router"],
   "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "main": "node.js",
   "browser": "dom.js",
   "files": ["dom.js", "node.js", "lib"],

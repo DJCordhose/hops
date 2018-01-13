@@ -4,6 +4,9 @@
   "description": "Quick and easy deployment of Hops applications to AWS Lambda",
   "keywords": ["hops", "express", "aws", "lambda", "serverless"],
   "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "bin": {
     "hops-lambda": "commands/lambda.js"
   },

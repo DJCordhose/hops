@@ -5,6 +5,9 @@
     "Express server to enable server-side rendering of hops applications",
   "keywords": ["hops", "express"],
   "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "bin": {
     "hops-serve": "commands/serve.js"
   },

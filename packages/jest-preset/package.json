@@ -4,6 +4,9 @@
   "description": "Jest preset to work with Hops powered projects",
   "keywords": ["hops", "jest"],
   "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "files": ["jest-preset.json", "file-mock.js", "tpl-mock.js", "transforms"],
   "repository": {
     "type": "git",

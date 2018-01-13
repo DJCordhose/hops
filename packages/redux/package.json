@@ -4,6 +4,9 @@
   "description": "React and Redux implementation for Hops",
   "keywords": ["hops", "react", "redux"],
   "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "main": "index.js",
   "files": ["index.js"],
   "dependencies": {

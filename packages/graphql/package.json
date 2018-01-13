@@ -4,6 +4,9 @@
   "description": "React and GraphQL implementation for Hops",
   "keywords": ["hops", "react", "graphql"],
   "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "bin": {
     "hops-graphql": "commands/graphql.js"
   },
