@@ -7,9 +7,11 @@
   "engines": {
     "node": ">=6.0.0"
   },
-  "main": "index.js",
-  "files": ["index.js"],
+  "main": "index",
+  "module": "index.mjs",
+  "files": ["index.js", "index.mjs"],
   "dependencies": {
+    "@std/esm": "^0.19.2",
     "hops-react": "9.5.0"
   },
   "peerDependencies": {
