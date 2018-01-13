@@ -7,10 +7,12 @@
   "engines": {
     "node": ">=6.0.0"
   },
-  "main": "node.js",
+  "main": "node",
+  "module": "node.mjs",
   "browser": "dom.js",
-  "files": ["dom.js", "node.js", "lib"],
+  "files": ["dom.js", "node.js", "node.mjs", "lib"],
   "dependencies": {
+    "@std/esm": "^0.19.2",
     "hops-config": "9.5.0",
     "mixinable": "1.2.1",
     "serialize-javascript": "^1.4.0"
