@@ -3,9 +3,11 @@
   "version": "9.6.1",
   "private": true,
   "scripts": {
-    "test": "mocha --exit '*.js'"
+    "test": "mocha --exit -r @std/esm '*.js'"
   },
+  "@std/esm": "cjs",
   "devDependencies": {
+    "@std/esm": "^0.19.2",
     "hops": "9.6.1",
     "hops-build": "9.6.0",
     "hops-build-config": "9.5.0",
