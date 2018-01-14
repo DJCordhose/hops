@@ -36,7 +36,7 @@ module.exports = function defineStartCommand(args) {
       if (argv.static) {
         process.env.HOPS_MODE = 'static';
       }
-      var packageName =
+      const packageName =
         process.env.NODE_ENV === 'production' ? 'hops-express' : 'hops-build';
       if (require('../lib/package-manager').isPackageInstalled(packageName)) {
         require(packageName).runServer(argv);

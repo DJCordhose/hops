@@ -1,25 +1,25 @@
 #!/usr/bin/env node
 'use strict';
 
-var yargs = require('yargs');
+const yargs = require('yargs');
 
-var findCommands = require('./lib/commands');
-var packageManifest = require('./package.json');
+const findCommands = require('./lib/commands');
+const packageManifest = require('./package.json');
 
 module.exports = function run(defineCommand, command) {
-  var args = yargs
+  const args = yargs
     .version(packageManifest.version)
     .usage('Usage: $0 <command> [options]')
     .help('help')
     .alias('h', 'help')
     .demandCommand();
-  var argv = process.argv.slice(2);
+  const argv = process.argv.slice(2);
 
   if (defineCommand && command) {
     defineCommand(args);
     argv.unshift(command);
   } else {
-    findCommands().forEach(function(commandPath) {
+    findCommands().forEach(commandPath => {
       require(commandPath)(args);
     });
   }
