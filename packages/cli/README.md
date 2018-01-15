@@ -84,31 +84,4 @@ And the command `hops start` is only available if both `hops-build` and `hops-ex
 
 ## Configuration
 
-hops is being configured through `hops-config` which in turn uses the npm config mechanism (read more at [hops-config](https://github.com/xing/hops/tree/master/packages/config)).
-
-That means that while you can run `hops` commands independently and they will use the configuration from your package.json file, you cannot overwrite these values through `npm config set ...` in this mode. For that to work you need to run the hops through your package.json `scripts` fields.
-
-```JSON
-{
-  "name": "my-application",
-  "scripts": {
-    "start": "hops start"
-  },
-  "config": {
-    "hops:": {
-      "port": "3000"
-    }
-  }
-}
-```
-
-```bash
-npm config set my-application:hops:port 1337
-```
-
-And now you can execute the "start" command through npm or yarn:
-
-```bash
-npm start
-yarn start
-```
+hops is being configured through [`hops-config`](https://github.com/xing/hops/tree/master/packages/config).
